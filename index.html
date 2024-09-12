@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Music Generation Demo</title>
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+        header {
+            background: #333;
+            color: #fff;
+            padding: 10px 0;
+            text-align: center;
+        }
+        .container {
+            width: 80%;
+            margin: 20px auto;
+        }
+        .hero {
+            text-align: center;
+            padding: 20px 0;
+        }
+        .hero h1 {
+            margin: 0;
+            font-size: 2.5em;
+        }
+        .hero p {
+            font-size: 1.2em;
+        }
+        .section {
+            margin: 20px 0;
+        }
+        .section h2 {
+            border-bottom: 2px solid #333;
+            padding-bottom: 10px;
+        }
+        .section p {
+            font-size: 1.1em;
+        }
+        .demo-controls {
+            text-align: center;
+            margin: 20px 0;
+        }
+        .demo-controls button {
+            padding: 10px 20px;
+            font-size: 1em;
+            background-color: #333;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+        .demo-controls button:hover {
+            background-color: #555;
+        }
+        footer {
+            text-align: center;
+            padding: 10px 0;
+            background: #333;
+            color: #fff;
+        }
+        table { margin: 20px auto; border-collapse: collapse; width: 80%; }
+        th, td { border: 1px solid #ddd; padding: 8px; }
+        audio { width: 100%; } /* Adjust audio player size */
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>DuoTune: A Scalable Single Model for Producing Harmonious and High Fidelity Music with Vocals and Accompaniment</h1>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="hero">
+            <h1 id="abstract">Abstract</h1>
+            <p style="text-align: justify;">We introduce DuoTune, a latent diffusion model (LDM) capable of simultaneously generating harmonious and high-quality vocals and accompaniment. DuoTune can easily scale data without the need to separate vocal or duration information during training. Without needing an explicit world-level duration model, DuoTune accurately renders the given lyrics using cross-attention mechanisms and an appropriate text encoder, achieving a phoneme error rate of just 3.6%. Despite having only 0.9B parameters, DuoTune surpasses Jukebox, which has 7B parameters, in both subjective and objective tests, and performs comparably in subjective evaluations against the latest music generation model Suno. Additionally, by incorporating the style encoder during training, the model can control vocal timbre and style by prompt singing demonstrating greater control over the generation process.</p>
+            <img src="images/DuoTune_overview.jpg" alt="DuoTune Overview" width="900" />
+            <h2 style="text-align: left;"><strong>Table of Contents</strong></h2>
+            <ol style="text-align: left;">
+                <li><a href="#abstract" style="font-size: 20px;">Abstract</a></li>
+                <li><a href="#DuoTune_comparison" style="font-size: 20px;">H.1 DuoTune Comparison with Jukebox and Suno</a></li>
+                <li><a href="#similarity" style="font-size: 20px;">H.2 Similarity with prompt singing</a></li>
+                <li><a href="#dura_style" style="font-size: 20px;">H.3 Duration effects style</a></li>
+                <li><a href="#gs" style="font-size: 20px;">H.4 Guidance Scale Abalation</a></li>
+                <li><a href="#en_alt" style="font-size: 20px;">H.5 Case of English ALT</a></li>
+            </ol>
+        </div>
+
+        <div class="section">
+            <h2 id="DuoTune_comparison">H.1 DuoTune Comparison with Jukebox and Suno</h2>
+            <p>
+                We present a comparison of our proposed DuoTune with Jukebox and Suno3.5. DuoTune demonstrates strong LTS performance in both Chinese and English. 
+                It is necessary to note that Jukebox lacks Chinese capabilities.
+            </p>
+            <table style="margin-top: 20px;">
+                <tr><th>Lyrics</th><th style="width: 15%;">DuoTune, &omega; = 3</th><th style="width: 15%;">Jukebox</th><th style="width: 15%;">Suno 3.5</th></tr>
+                <tr><td>起来饥寒交迫的奴隶 起来全世界受苦的人 满腔的热血已经沸腾 要为了正义而斗争</td><td><audio controls src="demos/h3/duotune/sample-11.wav"></audio></td><td></td><td><audio controls src="demos/h3/suno/wav6-1-11.wav"></audio></td></tr>
+                <tr><td>风一更 雪一更 聒碎乡心梦不成 故园无此声</td><td><audio controls src="demos/h3/duotune/sample-16.wav"></audio></td><td></td><td><audio controls src="demos/h3/suno/wav6-1_16.wav"></audio></td></tr>
+                <tr><td>Twinkle twinkle little star, How I wonder what you are</td><td><audio controls src="demos/h3/duotune/sample-11-en.wav"></audio></td><td><audio controls src="demos/h3/jukebox/sample-11-en.wav"></audio></td><td><audio controls src="demos/h3/suno/wav6-1-11-en.wav"></audio></td></tr>
+                <tr><td>welcome to the hotel california, such a lovely place, such a lovely place</td><td><audio controls src="demos/h3/duotune/sample-14-en.wav"></audio></td><td><audio controls src="demos/h3/jukebox/sample-14-en.wav"></audio></td><td><audio controls src="demos/h3/suno/wav6-1-14-en.wav"></audio></td></tr>
+            </table>
+        </div>
+
+        <div class="section">
+            <h2 id="similarity">H.2 Similarity with prompt singing</h2>
+            <ul>
+            <li> 
+                DuoTune has the capability for prompt LTS and can effectively replicate the timbre, vocal style, and accompaniment style of prompt singing. 
+            </li>
+            <li>  
+                Additionally, from the samples, we observe that performance is comparable when the guidance scale is set to 3, 5, and 7. This indicates that prompt singing compensates for the diminishing musicality in pure LTS tasks as the guidance scale increases, which is due to the loss of the "randomness of unconditional noise."
+            </li>
+            </ul>
+            <table style="margin-top: 20px;">
+                <tr><th colspan="4">Prompt Singing<audio controls src="demos/h4/pop_man.wav"></audio></th></tr>
+                <tr><td colspan="4" style="text-align: center;">Lyrics: 只是因为在人群中多看了你一眼</td></tr>
+                <tr><td>&omega; = 1<audio controls src="demos/h4/sample-9-cfg1.wav"></audio></td><td>&omega; = 3<audio controls src="demos/h4/sample-9-cfg3.wav"></audio></td><td>&omega; = 5<audio controls src="demos/h4/sample-9-cfg5.wav"></audio></td><td>&omega; = 7<audio controls src="demos/h4/sample-9-cfg7.wav"></audio></td></tr>
+            </table>
+        </div>
+
+        <div class="section">
+            <h2 id="dura_style">H.3 Duration effects style</h2>
+            <p>
+                The average duration of a single phoneme affects the overall style of the song. Specifically, for the same lyrics, a longer total duration T<sub>d</sub> results in a more relaxed style in the generated sample, while a shorter total duration T<sub>d</sub> leads to a more energetic style.
+            </p>
+            <table style="margin-top: 20px;">
+                <tr><th colspan="3" style="text-align: center;">Lyrics: 一条大河波浪宽 风吹稻花香两岸</th></tr>
+                <tr><td>1 phn/s<audio controls src="demos/h6/t15.wav"></audio></td><td>1.5 phn/s<audio controls src="demos/h6/t10.wav"></audio></td><td>3 phn/s<audio controls src="demos/h6/t5.wav"></audio></td></tr>
+                <tr><th colspan="3" style="text-align: center;">Lyrics: When I was young I'd listen to the radio, Waiting for my favorite songs </th></tr>
+                <tr><td>1 phn/s<audio controls src="demos/h6/t15-en.wav"></audio></td><td>1.5 phn/s<audio controls src="demos/h6/t10-en.wav"></audio></td><td>3 phn/s<audio controls src="demos/h6/t5-en.wav"></audio></td></tr>
+            </table>
+        </div>
+
+        <div class="section">
+            <h2 id="gs">H.4 Guidance Scale Abalation</h2>
+            <ul>
+            <li>                
+                When &omega; = 1, the samples exhibit a certain musicality. However, due to the excessive unconditional noise, the generated songs have unclear enunciation. In Chinese data, there might occasionally be instances of Cantonese (see the first Chinese demo). Additionally, because of the excessive unconditional noise, the accompaniment does not match well with the vocals.
+            </li>
+            <li>
+                When &omega; = 7, the excessive reduction of unconditional noise leads to samples with diminished musicality. This is manifested in dissonant melodies and even missing melodies. The accompaniment also becomes very faint.
+            </li>
+            <li>
+                When &omega; = 3, the model achieves a balance between unconditional noise and described pronunciation, producing samples with clear enunciation and good melodies.
+            </li>
+            <li>
+                In summary, this indicates that the musicality in pure LTS tasks in our proposed DuoTune comes from the appropriate level of randomness in unconditional noise.
+            </li>
+            </ul>
+            <table style="margin-top: 20px;">
+                <tr><th>Lyrics</th><th style="width: 15%;">DuoTune &omega; = 1</th><th style="width: 15%;">DuoTune &omega; = 3</th><th style="width: 15%;">DuoTune &omega; = 7</th></tr>
+                <tr><td>起来饥寒交迫的奴隶 起来全世界受苦的人 满腔的热血已经沸腾 要为了正义而斗争</td><td><audio controls src="demos/h1/sample-11.wav"></audio></td><td><audio controls src="demos/h3/duotune/sample-11.wav"></audio></td><td><audio controls src="demos/h2/sample-11.wav"></audio></td></tr>
+                <tr><td>行路难 行路难 多歧路 今安在 长风破浪会有时 直挂云帆济沧海</td><td><audio controls src="demos/h1/sample-15.wav"></audio></td><td><audio controls src="demos/h3/duotune/sample-15.wav"></audio></td><td><audio controls src="demos/h2/sample-15.wav"></audio></td></tr>
+                <tr><td> I'm sitting here in a boring room, It's just another rainy Sunday afternoon</td><td><audio controls src="demos/h1/sample-7-en.wav"></audio></td><td><audio controls src="demos/h3/duotune/sample-7-en.wav"></audio></td><td><audio controls src="demos/h2/sample-7-en.wav"></audio></td></tr>
+                <tr><td>welcome to the hotel california, such a lovely place, such a lovely place</td><td><audio controls src="demos/h1/sample-14-en.wav"></audio></td><td><audio controls src="demos/h3/duotune/sample-14-en.wav"></audio></td><td><audio controls src="demos/h2/sample-14-en.wav"></audio></td></tr>
+            </table>
+        </div>
+
+        <!-- <div class="section">
+            <h2 id="gs7">H.2 Guidance Scale = 7</h2>
+            <table style="margin-top: 20px;">
+                <tr><th>Lyrics</th><th style="width: 15%;">DuoTune</th></tr>
+                <tr><td>起来饥寒交迫的奴隶 起来全世界受苦的人 满腔的热血已经沸腾 要为了正义而斗争</td><td><audio controls src="demos/h2/sample-11.wav"></audio></td></tr>
+                <tr><td>行路难 行路难 多歧路 今安在 长风破浪会有时 直挂云帆济沧海</td><td><audio controls src="demos/h2/sample-15.wav"></audio></td></tr>
+                <tr><td>I'm sitting here in a boring room, It's just another rainy Sunday afternoon</td><td><audio controls src="demos/h2/sample-7-en.wav"></audio></td></tr>
+                <tr><td>welcome to the hotel california, such a lovely place, such a lovely place</td><td><audio controls src="demos/h2/sample-14-en.wav"></audio></td></tr>
+
+            </table>
+        </div> -->
+
+        <div class="section">
+            <h2 id="en_alt">H.5 Case of English ALT</h2>
+            <p>
+                We failed to find a credible English automatic lyric transcript (ALT) system. The WER of the transcripts obtained by all the ALT we've tested on the public was unacceptably high.
+                The demo page illustrates specific error cases. Transcripts that are completely unrelated to the ground truth cannot support our research.
+            </p>
+            <table style="margin-top: 20px;">
+                <tr><th style="width: 15%;">English Demo</th><th>Ground Truth</th><th>ALT transcript</th></tr>
+                <tr><td><audio controls src="demos/h5/sample-0.wav"></audio></td><td>Why do you take all that 'Cause it's making me moan And it's making me weep</td><td>WATCH OUR TASTES OUT TO SUCH MAN HALLELUUH HOW MUCH OF A LOVE</td></tr>
+            </table>
+        </div>
+
+        
+
+
+
+
+        
+
+        <!-- <div class="section">
+            <h2>How It Works</h2>
+            <p>Simply press the button below to generate a new music piece. You can customize various parameters to influence the style and mood of the generated music.</p>
+        </div>
+
+        <div class="demo-controls">
+            <button onclick="generateMusic()">Generate Music</button>
+        </div> -->
+
+        <!-- <div class="section">
+            <h2>Listen to a Sample</h2>
+            <audio controls>
+                <source src="sample-music.mp3" type="audio/mpeg">
+                Your browser does not support the audio element.
+            </audio>
+        </div> -->
+    </div>
+
+    <footer>
+        <p>&copy; 2024 DuoTune Music Generation Demo. All rights reserved.</p>
+    </footer>
+
+    <!-- <script>
+        function generateMusic() {
+            alert("Music generation functionality is not yet implemented.");
+        }
+    </script> -->
+</body>
+</html>
+
