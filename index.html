@@ -6,6 +6,23 @@
     <title>Music Generation Demo</title>
     <link rel="stylesheet" href="styles.css">
     <style>
+        #backToTop {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #007BFF;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            display: none; /* 初始隐藏 */
+        }
+        
+        #backToTop:hover {
+            background-color: #0056b3;
+        }
+
         body {
             font-family: Arial, sans-serif;
             line-height: 1.6;
@@ -71,149 +88,294 @@
     </style>
 </head>
 <body>
+
+    <button id="backToTop">Back to Top</button>
+
+    <script>
+        const backToTopButton = document.getElementById('backToTop');
+
+        window.onscroll = function() {
+            if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
+                backToTopButton.style.display = "block";
+            } else {
+                backToTopButton.style.display = "none";
+            }
+        };
+
+        backToTopButton.onclick = function() {
+            document.body.scrollTop = 0; // 对于 Safari
+            document.documentElement.scrollTop = 0; // 对于 Chrome, Firefox, IE 和 Opera
+        };
+    </script>
+
     <header>
         <div class="container">
-            <h1>DuoTune: A Scalable Single Model for Producing Harmonious and High Fidelity Music with Vocals and Accompaniment</h1>
+            <h1>Mono2PolySVC: Any-to-any Zero-Shot Singing Voice Conversion from Chinese-Only Training to Multilingual Performance</h1>
         </div>
     </header>
 
     <div class="container">
         <div class="hero">
             <h1 id="abstract">Abstract</h1>
-            <p style="text-align: justify;">We introduce DuoTune, a latent diffusion model (LDM) capable of simultaneously generating harmonious and high-quality vocals and accompaniment. DuoTune can easily scale data without the need to separate vocal or duration information during training. Without needing an explicit world-level duration model, DuoTune accurately renders the given lyrics using cross-attention mechanisms and an appropriate text encoder, achieving a phoneme error rate of just 3.6%. Despite having only 0.9B parameters, DuoTune surpasses Jukebox, which has 7B parameters, in both subjective and objective tests, and performs comparably in subjective evaluations against the latest music generation model Suno. Additionally, by incorporating the style encoder during training, the model can control vocal timbre and style by prompt singing demonstrating greater control over the generation process.</p>
-            <img src="images/DuoTune_overview.jpg" alt="DuoTune Overview" width="900" />
+            <p style="text-align: justify;">
+                Recently, some any-to-any zero-shot singing voice conversion (SVC) approaches have employed discrete tokens for content representation. Although this technique effectively separates timbre information and prevents timbre leakage, it faces limitations in reconstructing content for languages not included in the training set. 
+                To address this issue, we present Mono2PolySVC, a novel any-to-any zero-shot SVC system that utilizes Chinese-only training data to enable multilingual singing voice conversion. 
+                By simply incorporating content embedding sampling, our method restricts the information within the content representation while maintaining the semantic representation space. 
+                This approach not only achieves performance comparable to systems using discrete tokens for content representation in any-to-any zero-shot SVC tasks within the training languages but also successfully performs voice conversion for languages outside the training set.
+            </p>
+            <img src="image/model_overview.png" alt="Invox Overview" width="900" />
             <h2 style="text-align: left;"><strong>Table of Contents</strong></h2>
             <ol style="text-align: left;">
                 <li><a href="#abstract" style="font-size: 20px;">Abstract</a></li>
-                <li><a href="#DuoTune_comparison" style="font-size: 20px;">H.1 DuoTune Comparison with Jukebox and Suno</a></li>
-                <li><a href="#similarity" style="font-size: 20px;">H.2 Similarity with prompt singing</a></li>
-                <li><a href="#dura_style" style="font-size: 20px;">H.3 Duration effects style</a></li>
-                <li><a href="#gs" style="font-size: 20px;">H.4 Guidance Scale Abalation</a></li>
-                <li><a href="#en_alt" style="font-size: 20px;">H.5 Case of English ALT</a></li>
+                <li><a href="#statement" style="font-size: 20px;">Notes</a></li>
+                <li><a href="#waiyu" style="font-size: 20px;">The SVC Performance of Languages other than Chinese</a></li>
+                <li><a href="#hanyu" style="font-size: 20px;">The SVC Performance of Languages in Chinese</a></li>
             </ol>
         </div>
 
         <div class="section">
-            <h2 id="DuoTune_comparison">H.1 DuoTune Comparison with Jukebox and Suno</h2>
+            <h2 id="statement">Notes</h2>
             <p>
-                We present a comparison of our proposed DuoTune with Jukebox and Suno3.5. DuoTune demonstrates strong LTS performance in both Chinese and English. 
-                It is necessary to note that Jukebox lacks Chinese capabilities.
+                <li>All models were trained with the AdamW optimizer on 8 A100 GPUs, using a mini-batch size of 80 for 100,000 steps.</li> 
+                <li>We utilized an internal dataset consisting of 200 hours of singing in Chinese from 10,000 non-professional singers, with each singer contributing about one minute of singing.</li>
+                <li>The source and target samples used for inference both contain noise.</li>
+            </p>
+        </div>
+
+        <div class="section">
+            <h2 id="waiyu">The SVC Performance of Languages other than Chinese</h2>
+            <p>
+                <li>The token-based approach exhibits slight variations in pronunciation and intonation in the source WAV file. For example, the final light "t" and "k" in the English samples cannot be pronounced correctly. And Vietnamese songs are also sung in a somewhat unclear manner.</li>
+                <li>In languages not included in the training set, our proposed Mono2PolySVC system demonstrates strong content reconstruction and voice conversion capabilities.</li>
             </p>
             <table style="margin-top: 20px;">
-                <tr><th>Lyrics</th><th style="width: 15%;">DuoTune, &omega; = 3</th><th style="width: 15%;">Jukebox</th><th style="width: 15%;">Suno 3.5</th></tr>
-                <tr><td>起来饥寒交迫的奴隶 起来全世界受苦的人 满腔的热血已经沸腾 要为了正义而斗争</td><td><audio controls src="demos/h3/duotune/sample-11.wav"></audio></td><td></td><td><audio controls src="demos/h3/suno/wav6-1-11.wav"></audio></td></tr>
-                <tr><td>风一更 雪一更 聒碎乡心梦不成 故园无此声</td><td><audio controls src="demos/h3/duotune/sample-16.wav"></audio></td><td></td><td><audio controls src="demos/h3/suno/wav6-1_16.wav"></audio></td></tr>
-                <tr><td>Twinkle twinkle little star, How I wonder what you are</td><td><audio controls src="demos/h3/duotune/sample-11-en.wav"></audio></td><td><audio controls src="demos/h3/jukebox/sample-11-en.wav"></audio></td><td><audio controls src="demos/h3/suno/wav6-1-11-en.wav"></audio></td></tr>
-                <tr><td>welcome to the hotel california, such a lovely place, such a lovely place</td><td><audio controls src="demos/h3/duotune/sample-14-en.wav"></audio></td><td><audio controls src="demos/h3/jukebox/sample-14-en.wav"></audio></td><td><audio controls src="demos/h3/suno/wav6-1-14-en.wav"></audio></td></tr>
+                <tr>
+                    <th colspan="5" style="text-align: center;"><strong>Target Female</strong><audio controls src="demo/tgt/female2.wav"></audio></th>
+                </tr>
+                <tr>
+                    <td style="text-align: center; width: 20%;"><strong>Source</strong></td>
+                    <td style="text-align: center; width: 20%;">Cantonese<audio controls src="demo/mono_demo/waiyu/ca.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">English<audio controls src="demo/mono_demo/waiyu/en.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">Korean<audio controls src="demo/mono_demo/waiyu/ko.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">Vietnamese<audio controls src="demo/mono_demo/waiyu/vi.wav"></audio></td>
+                </tr>
+                <tr>
+                    <td style="text-align: center; width: 20%;">Mono2PolySVC</td>
+                    <td style="text-align: center; width: 20%;">Cantonese<audio controls src="demo/mono_demo/contentvec256/waiyu/female2_ca.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">English<audio controls src="demo/mono_demo/contentvec256/waiyu/female2_en.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">Korean<audio controls src="demo/mono_demo/contentvec256/waiyu/female2_ko.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">Vietnamese<audio controls src="demo/mono_demo/contentvec256/waiyu/female2_vi.wav"></audio></td>
+                </tr>
+                <tr>
+                    <td style="text-align: center; width: 20%;">SSL-Token</td>
+                    <td style="text-align: center; width: 20%;">Cantonese<audio controls src="demo/mono_demo/so-vits-svc/waiyu/female2_ca.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">English<audio controls src="demo/mono_demo/so-vits-svc/waiyu/female2_en.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">Korean<audio controls src="demo/mono_demo/so-vits-svc/waiyu/female2_ko.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">Vietnamese<audio controls src="demo/mono_demo/so-vits-svc/waiyu/female2_vi.wav"></audio></td>
+                </tr>
+                <tr>
+                    <td style="text-align: center; width: 20%;">SSL-Emb</td>
+                    <td style="text-align: center; width: 20%;">Cantonese<audio controls src="demo/mono_demo/so-vits-svc_emb/waiyu/female2_ca.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">English<audio controls src="demo/mono_demo/so-vits-svc_emb/waiyu/female2_en.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">Korean<audio controls src="demo/mono_demo/so-vits-svc_emb/waiyu/female2_ko.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">Vietnamese<audio controls src="demo/mono_demo/so-vits-svc_emb/waiyu/female2_vi.wav"></audio></td>
+                </tr>
+                <tr>
+                    <td style="text-align: center; width: 20%;">ContentVec-Emb</td>
+                    <td style="text-align: center; width: 20%;">Cantonese<audio controls src="demo/mono_demo/contentvec/waiyu/female2_ca.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">English<audio controls src="demo/mono_demo/contentvec/waiyu/female2_en.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">Korean<audio controls src="demo/mono_demo/contentvec/waiyu/female2_ko.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">Vietnamese<audio controls src="demo/mono_demo/contentvec/waiyu/female2_vi.wav"></audio></td>
+                </tr>
+                <tr>
+                    <td style="text-align: center; width: 20%;">SSL-256-Emb</td>
+                    <td style="text-align: center; width: 20%;">Cantonese<audio controls src="demo/mono_demo/random1_2/waiyu/female2_ca.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">English<audio controls src="demo/mono_demo/random1_2/waiyu/female2_en.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">Korean<audio controls src="demo/mono_demo/random1_2/waiyu/female2_ko.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">Vietnamese<audio controls src="demo/mono_demo/random1_2/waiyu/female2_vi.wav"></audio></td>
+                </tr>
+                <tr>
+                    <td style="text-align: center; width: 20%;">SSL-128-Emb</td>
+                    <td style="text-align: center; width: 20%;">Cantonese<audio controls src="demo/mono_demo/random3_2/waiyu/female2_ca.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">English<audio controls src="demo/mono_demo/random3_2/waiyu/female2_en.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">Korean<audio controls src="demo/mono_demo/random3_2/waiyu/female2_ko.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">Vietnamese<audio controls src="demo/mono_demo/random3_2/waiyu/female2_vi.wav"></audio></td>
+                </tr>
+                <tr>
+                    <th colspan="5" style="text-align: center;"><strong>Target Male</strong><audio controls src="demo/tgt/male2.wav"></audio></th>
+                </tr>
+                <tr>
+                    <td style="text-align: center; width: 20%;"><strong>Source</strong></td>
+                    <td style="text-align: center; width: 20%;">Cantonese<audio controls src="demo/mono_demo/waiyu/ca.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">English<audio controls src="demo/mono_demo/waiyu/en.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">Korean<audio controls src="demo/mono_demo/waiyu/ko.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">Vietnamese<audio controls src="demo/mono_demo/waiyu/vi.wav"></audio></td>
+                </tr>
+                <tr>
+                    <td style="text-align: center; width: 20%;">Mono2PolySVC</td>
+                    <td style="text-align: center; width: 20%;">Cantonese<audio controls src="demo/mono_demo/contentvec256/waiyu/male2_ca.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">English<audio controls src="demo/mono_demo/contentvec256/waiyu/male2_en.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">Korean<audio controls src="demo/mono_demo/contentvec256/waiyu/male2_ko.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">Vietnamese<audio controls src="demo/mono_demo/contentvec256/waiyu/male2_vi.wav"></audio></td>
+                </tr>
+                <tr>
+                    <td style="text-align: center; width: 20%;">SSL-Token</td>
+                    <td style="text-align: center; width: 20%;">Cantonese<audio controls src="demo/mono_demo/so-vits-svc/waiyu/male2_ca.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">English<audio controls src="demo/mono_demo/so-vits-svc/waiyu/male2_en.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">Korean<audio controls src="demo/mono_demo/so-vits-svc/waiyu/male2_ko.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">Vietnamese<audio controls src="demo/mono_demo/so-vits-svc/waiyu/male2_vi.wav"></audio></td>
+                </tr>
+                <tr>
+                    <td style="text-align: center; width: 20%;">SSL-Emb</td>
+                    <td style="text-align: center; width: 20%;">Cantonese<audio controls src="demo/mono_demo/so-vits-svc_emb/waiyu/male2_ca.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">English<audio controls src="demo/mono_demo/so-vits-svc_emb/waiyu/male2_en.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">Korean<audio controls src="demo/mono_demo/so-vits-svc_emb/waiyu/male2_ko.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">Vietnamese<audio controls src="demo/mono_demo/so-vits-svc_emb/waiyu/male2_vi.wav"></audio></td>
+                </tr>
+                <tr>
+                    <td style="text-align: center; width: 20%;">ContentVec-Emb</td>
+                    <td style="text-align: center; width: 20%;">Cantonese<audio controls src="demo/mono_demo/contentvec/waiyu/male2_ca.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">English<audio controls src="demo/mono_demo/contentvec/waiyu/male2_en.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">Korean<audio controls src="demo/mono_demo/contentvec/waiyu/male2_ko.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">Vietnamese<audio controls src="demo/mono_demo/contentvec/waiyu/male2_vi.wav"></audio></td>
+                </tr>
+                <tr>
+                    <td style="text-align: center; width: 20%;">SSL-256-Emb</td>
+                    <td style="text-align: center; width: 20%;">Cantonese<audio controls src="demo/mono_demo/random1_2/waiyu/male2_ca.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">English<audio controls src="demo/mono_demo/random1_2/waiyu/male2_en.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">Korean<audio controls src="demo/mono_demo/random1_2/waiyu/male2_ko.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">Vietnamese<audio controls src="demo/mono_demo/random1_2/waiyu/male2_vi.wav"></audio></td>
+                </tr>
+                <tr>
+                    <td style="text-align: center; width: 20%;">SSL-128-Emb</td>
+                    <td style="text-align: center; width: 20%;">Cantonese<audio controls src="demo/mono_demo/random3_2/waiyu/male2_ca.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">English<audio controls src="demo/mono_demo/random3_2/waiyu/male2_en.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">Korean<audio controls src="demo/mono_demo/random3_2/waiyu/male2_ko.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">Vietnamese<audio controls src="demo/mono_demo/random3_2/waiyu/male2_vi.wav"></audio></td>
+                </tr>
             </table>
         </div>
 
         <div class="section">
-            <h2 id="similarity">H.2 Similarity with prompt singing</h2>
-            <ul>
-            <li> 
-                DuoTune has the capability for prompt LTS and can effectively replicate the timbre, vocal style, and accompaniment style of prompt singing. 
-            </li>
-            <li>  
-                Additionally, from the samples, we observe that performance is comparable when the guidance scale is set to 3, 5, and 7. This indicates that prompt singing compensates for the diminishing musicality in pure LTS tasks as the guidance scale increases, which is due to the loss of the "randomness of unconditional noise."
-            </li>
-            </ul>
-            <table style="margin-top: 20px;">
-                <tr><th colspan="4">Prompt Singing<audio controls src="demos/h4/pop_man.wav"></audio></th></tr>
-                <tr><td colspan="4" style="text-align: center;">Lyrics: 只是因为在人群中多看了你一眼</td></tr>
-                <tr><td>&omega; = 1<audio controls src="demos/h4/sample-9-cfg1.wav"></audio></td><td>&omega; = 3<audio controls src="demos/h4/sample-9-cfg3.wav"></audio></td><td>&omega; = 5<audio controls src="demos/h4/sample-9-cfg5.wav"></audio></td><td>&omega; = 7<audio controls src="demos/h4/sample-9-cfg7.wav"></audio></td></tr>
-            </table>
-        </div>
-
-        <div class="section">
-            <h2 id="dura_style">H.3 Duration effects style</h2>
+            <h2 id="hanyu">The SVC Performance of Languages in Chinese</h2>
             <p>
-                The average duration of a single phoneme affects the overall style of the song. Specifically, for the same lyrics, a longer total duration T<sub>d</sub> results in a more relaxed style in the generated sample, while a shorter total duration T<sub>d</sub> leads to a more energetic style.
+                <li>We validated that our proposed Mono2PolySVC system is comparable to the best previous token-based methods on languages within the training set.</li>
             </p>
             <table style="margin-top: 20px;">
-                <tr><th colspan="3" style="text-align: center;">Lyrics: 一条大河波浪宽 风吹稻花香两岸</th></tr>
-                <tr><td>1 phn/s<audio controls src="demos/h6/t15.wav"></audio></td><td>1.5 phn/s<audio controls src="demos/h6/t10.wav"></audio></td><td>3 phn/s<audio controls src="demos/h6/t5.wav"></audio></td></tr>
-                <tr><th colspan="3" style="text-align: center;">Lyrics: When I was young I'd listen to the radio, Waiting for my favorite songs </th></tr>
-                <tr><td>1 phn/s<audio controls src="demos/h6/t15-en.wav"></audio></td><td>1.5 phn/s<audio controls src="demos/h6/t10-en.wav"></audio></td><td>3 phn/s<audio controls src="demos/h6/t5-en.wav"></audio></td></tr>
-            </table>
-        </div>
-
-        <div class="section">
-            <h2 id="gs">H.4 Guidance Scale Abalation</h2>
-            <ul>
-            <li>                
-                When &omega; = 1, the samples exhibit a certain musicality. However, due to the excessive unconditional noise, the generated songs have unclear enunciation. In Chinese data, there might occasionally be instances of Cantonese (see the first Chinese demo). Additionally, because of the excessive unconditional noise, the accompaniment does not match well with the vocals.
-            </li>
-            <li>
-                When &omega; = 7, the excessive reduction of unconditional noise leads to samples with diminished musicality. This is manifested in dissonant melodies and even missing melodies. The accompaniment also becomes very faint.
-            </li>
-            <li>
-                When &omega; = 3, the model achieves a balance between unconditional noise and described pronunciation, producing samples with clear enunciation and good melodies.
-            </li>
-            <li>
-                In summary, this indicates that the musicality in pure LTS tasks in our proposed DuoTune comes from the appropriate level of randomness in unconditional noise.
-            </li>
-            </ul>
-            <table style="margin-top: 20px;">
-                <tr><th>Lyrics</th><th style="width: 15%;">DuoTune &omega; = 1</th><th style="width: 15%;">DuoTune &omega; = 3</th><th style="width: 15%;">DuoTune &omega; = 7</th></tr>
-                <tr><td>起来饥寒交迫的奴隶 起来全世界受苦的人 满腔的热血已经沸腾 要为了正义而斗争</td><td><audio controls src="demos/h1/sample-11.wav"></audio></td><td><audio controls src="demos/h3/duotune/sample-11.wav"></audio></td><td><audio controls src="demos/h2/sample-11.wav"></audio></td></tr>
-                <tr><td>行路难 行路难 多歧路 今安在 长风破浪会有时 直挂云帆济沧海</td><td><audio controls src="demos/h1/sample-15.wav"></audio></td><td><audio controls src="demos/h3/duotune/sample-15.wav"></audio></td><td><audio controls src="demos/h2/sample-15.wav"></audio></td></tr>
-                <tr><td> I'm sitting here in a boring room, It's just another rainy Sunday afternoon</td><td><audio controls src="demos/h1/sample-7-en.wav"></audio></td><td><audio controls src="demos/h3/duotune/sample-7-en.wav"></audio></td><td><audio controls src="demos/h2/sample-7-en.wav"></audio></td></tr>
-                <tr><td>welcome to the hotel california, such a lovely place, such a lovely place</td><td><audio controls src="demos/h1/sample-14-en.wav"></audio></td><td><audio controls src="demos/h3/duotune/sample-14-en.wav"></audio></td><td><audio controls src="demos/h2/sample-14-en.wav"></audio></td></tr>
-            </table>
-        </div>
-
-        <!-- <div class="section">
-            <h2 id="gs7">H.2 Guidance Scale = 7</h2>
-            <table style="margin-top: 20px;">
-                <tr><th>Lyrics</th><th style="width: 15%;">DuoTune</th></tr>
-                <tr><td>起来饥寒交迫的奴隶 起来全世界受苦的人 满腔的热血已经沸腾 要为了正义而斗争</td><td><audio controls src="demos/h2/sample-11.wav"></audio></td></tr>
-                <tr><td>行路难 行路难 多歧路 今安在 长风破浪会有时 直挂云帆济沧海</td><td><audio controls src="demos/h2/sample-15.wav"></audio></td></tr>
-                <tr><td>I'm sitting here in a boring room, It's just another rainy Sunday afternoon</td><td><audio controls src="demos/h2/sample-7-en.wav"></audio></td></tr>
-                <tr><td>welcome to the hotel california, such a lovely place, such a lovely place</td><td><audio controls src="demos/h2/sample-14-en.wav"></audio></td></tr>
-
-            </table>
-        </div> -->
-
-        <div class="section">
-            <h2 id="en_alt">H.5 Case of English ALT</h2>
-            <p>
-                We failed to find a credible English automatic lyric transcript (ALT) system. The WER of the transcripts obtained by all the ALT we've tested on the public was unacceptably high.
-                The demo page illustrates specific error cases. Transcripts that are completely unrelated to the ground truth cannot support our research.
-            </p>
-            <table style="margin-top: 20px;">
-                <tr><th style="width: 15%;">English Demo</th><th>Ground Truth</th><th>ALT transcript</th></tr>
-                <tr><td><audio controls src="demos/h5/sample-0.wav"></audio></td><td>Why do you take all that 'Cause it's making me moan And it's making me weep</td><td>WATCH OUR TASTES OUT TO SUCH MAN HALLELUUH HOW MUCH OF A LOVE</td></tr>
+                <tr>
+                    <th colspan="5" style="text-align: center;"><strong>Target Female</strong><audio controls src="demo/tgt/female2.wav"></audio></th>
+                </tr>
+                <tr>
+                    <td style="text-align: center; width: 20%;"><strong>Source</strong></td>
+                    <td style="text-align: center; width: 20%;">wav1<audio controls src="demo/mono_demo/hanyu/1868033_0000000002147483647.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">wav2<audio controls src="demo/mono_demo/hanyu/1868748_6704597038050948794_2.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">wav3<audio controls src="demo/mono_demo/hanyu/1869914_-00000002147483648.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">wav4<audio controls src="demo/mono_demo/hanyu/1870057_0000000002147483647.wav"></audio></td>
+                </tr>
+                <tr>
+                    <td style="text-align: center; width: 20%;">Mono2PolySVC</td>
+                    <td style="text-align: center; width: 20%;">wav1<audio controls src="demo/mono_demo/contentvec256/hanyu/female2_1868033_0000000002147483647.wav.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">wav2<audio controls src="demo/mono_demo/contentvec256/hanyu/female2_1868748_6704597038050948794_2.wav.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">wav3<audio controls src="demo/mono_demo/contentvec256/hanyu/female2_1869914_-00000002147483648.wav.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">wav4<audio controls src="demo/mono_demo/contentvec256/hanyu/female2_1870057_0000000002147483647.wav.wav"></audio></td>
+                </tr>
+                <tr>
+                    <td style="text-align: center; width: 20%;">SSL-Token</td>
+                    <td style="text-align: center; width: 20%;">wav1<audio controls src="demo/mono_demo/so-vits-svc/hanyu/female2_1868033_0000000002147483647.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">wav2<audio controls src="demo/mono_demo/so-vits-svc/hanyu/female2_1868748_6704597038050948794_2.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">wav3<audio controls src="demo/mono_demo/so-vits-svc/hanyu/female2_1869914_-00000002147483648.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">wav4<audio controls src="demo/mono_demo/so-vits-svc/hanyu/female2_1870057_0000000002147483647.wav"></audio></td>
+                </tr>
+                <tr>
+                    <td style="text-align: center; width: 20%;">SSL-Emb</td>
+                    <td style="text-align: center; width: 20%;">wav1<audio controls src="demo/mono_demo/so-vits-svc_emb/hanyu/female2_1868033_0000000002147483647.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">wav2<audio controls src="demo/mono_demo/so-vits-svc_emb/hanyu/female2_1868748_6704597038050948794_2.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">wav3<audio controls src="demo/mono_demo/so-vits-svc_emb/hanyu/female2_1869914_-00000002147483648.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">wav4<audio controls src="demo/mono_demo/so-vits-svc_emb/hanyu/female2_1870057_0000000002147483647.wav"></audio></td>
+                </tr>
+                <tr>
+                    <td style="text-align: center; width: 20%;">ContentVec-Emb</td>
+                    <td style="text-align: center; width: 20%;">wav1<audio controls src="demo/mono_demo/contentvec/hanyu/female2_1868033_0000000002147483647.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">wav2<audio controls src="demo/mono_demo/contentvec/hanyu/female2_1868748_6704597038050948794_2.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">wav3<audio controls src="demo/mono_demo/contentvec/hanyu/female2_1869914_-00000002147483648.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">wav4<audio controls src="demo/mono_demo/contentvec/hanyu/female2_1870057_0000000002147483647.wav"></audio></td>
+                </tr>
+                <tr>
+                    <td style="text-align: center; width: 20%;">SSL-256-Emb</td>
+                    <td style="text-align: center; width: 20%;">wav1<audio controls src="demo/mono_demo/random1_2/hanyu/female2_1868033_0000000002147483647.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">wav2<audio controls src="demo/mono_demo/random1_2/hanyu/female2_1868748_6704597038050948794_2.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">wav3<audio controls src="demo/mono_demo/random1_2/hanyu/female2_1869914_-00000002147483648.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">wav4<audio controls src="demo/mono_demo/random1_2/hanyu/female2_1870057_0000000002147483647.wav"></audio></td>
+                </tr>
+                <tr>
+                    <td style="text-align: center; width: 20%;">SSL-128-Emb</td>
+                    <td style="text-align: center; width: 20%;">wav1<audio controls src="demo/mono_demo/random3_2/hanyu/female2_1868033_0000000002147483647.wav.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">wav2<audio controls src="demo/mono_demo/random3_2/hanyu/female2_1868748_6704597038050948794_2.wav.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">wav3<audio controls src="demo/mono_demo/random3_2/hanyu/female2_1869914_-00000002147483648.wav.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">wav4<audio controls src="demo/mono_demo/random3_2/hanyu/female2_1870057_0000000002147483647.wav.wav"></audio></td>
+                </tr>
+                <tr>
+                    <th colspan="5" style="text-align: center;"><strong>Target Male</strong><audio controls src="demo/tgt/male2.wav"></audio></th>
+                </tr>
+                <tr>
+                    <td style="text-align: center; width: 20%;"><strong>Source</strong></td>
+                    <td style="text-align: center; width: 20%;">wav1<audio controls src="demo/mono_demo/hanyu/1868033_0000000002147483647.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">wav2<audio controls src="demo/mono_demo/hanyu/1868748_6704597038050948794_2.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">wav3<audio controls src="demo/mono_demo/hanyu/1869914_-00000002147483648.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">wav4<audio controls src="demo/mono_demo/hanyu/1870057_0000000002147483647.wav"></audio></td>
+                </tr>
+                <tr>
+                    <td style="text-align: center; width: 20%;">Mono2PolySVC</td>
+                    <td style="text-align: center; width: 20%;">wav1<audio controls src="demo/mono_demo/contentvec256/hanyu/male2_1868033_0000000002147483647.wav.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">wav2<audio controls src="demo/mono_demo/contentvec256/hanyu/male2_1868748_6704597038050948794_2.wav.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">wav3<audio controls src="demo/mono_demo/contentvec256/hanyu/male2_1869914_-00000002147483648.wav.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">wav4<audio controls src="demo/mono_demo/contentvec256/hanyu/male2_1870057_0000000002147483647.wav.wav"></audio></td>
+                </tr>
+                <tr>
+                    <td style="text-align: center; width: 20%;">SSL-Token</td>
+                    <td style="text-align: center; width: 20%;">wav1<audio controls src="demo/mono_demo/so-vits-svc/hanyu/male2_1868033_0000000002147483647.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">wav2<audio controls src="demo/mono_demo/so-vits-svc/hanyu/male2_1868748_6704597038050948794_2.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">wav3<audio controls src="demo/mono_demo/so-vits-svc/hanyu/male2_1869914_-00000002147483648.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">wav4<audio controls src="demo/mono_demo/so-vits-svc/hanyu/male2_1870057_0000000002147483647.wav"></audio></td>
+                </tr>
+                <tr>
+                    <td style="text-align: center; width: 20%;">SSL-Emb</td>
+                    <td style="text-align: center; width: 20%;">wav1<audio controls src="demo/mono_demo/so-vits-svc_emb/hanyu/male2_1868033_0000000002147483647.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">wav2<audio controls src="demo/mono_demo/so-vits-svc_emb/hanyu/male2_1868748_6704597038050948794_2.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">wav3<audio controls src="demo/mono_demo/so-vits-svc_emb/hanyu/male2_1869914_-00000002147483648.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">wav4<audio controls src="demo/mono_demo/so-vits-svc_emb/hanyu/male2_1870057_0000000002147483647.wav"></audio></td>
+                </tr>
+                <tr>
+                    <td style="text-align: center; width: 20%;">ContentVec-Emb</td>
+                    <td style="text-align: center; width: 20%;">wav1<audio controls src="demo/mono_demo/contentvec/hanyu/male2_1868033_0000000002147483647.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">wav2<audio controls src="demo/mono_demo/contentvec/hanyu/male2_1868748_6704597038050948794_2.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">wav3<audio controls src="demo/mono_demo/contentvec/hanyu/male2_1869914_-00000002147483648.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">wav4<audio controls src="demo/mono_demo/contentvec/hanyu/male2_1870057_0000000002147483647.wav"></audio></td>
+                </tr>
+                <tr>
+                    <td style="text-align: center; width: 20%;">SSL-256-Emb</td>
+                    <td style="text-align: center; width: 20%;">wav1<audio controls src="demo/mono_demo/random1_2/hanyu/male2_1868033_0000000002147483647.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">wav2<audio controls src="demo/mono_demo/random1_2/hanyu/male2_1868748_6704597038050948794_2.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">wav3<audio controls src="demo/mono_demo/random1_2/hanyu/male2_1869914_-00000002147483648.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">wav4<audio controls src="demo/mono_demo/random1_2/hanyu/male2_1870057_0000000002147483647.wav"></audio></td>
+                </tr>
+                <tr>
+                    <td style="text-align: center; width: 20%;">SSL-128-Emb</td>
+                    <td style="text-align: center; width: 20%;">wav1<audio controls src="demo/mono_demo/random3_2/hanyu/male2_1868033_0000000002147483647.wav.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">wav2<audio controls src="demo/mono_demo/random3_2/hanyu/male2_1868748_6704597038050948794_2.wav.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">wav3<audio controls src="demo/mono_demo/random3_2/hanyu/male2_1869914_-00000002147483648.wav.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">wav4<audio controls src="demo/mono_demo/random3_2/hanyu/male2_1870057_0000000002147483647.wav.wav"></audio></td>
+                </tr>
             </table>
         </div>
 
         
 
-
-
-
         
-
-        <!-- <div class="section">
-            <h2>How It Works</h2>
-            <p>Simply press the button below to generate a new music piece. You can customize various parameters to influence the style and mood of the generated music.</p>
-        </div>
-
-        <div class="demo-controls">
-            <button onclick="generateMusic()">Generate Music</button>
-        </div> -->
-
-        <!-- <div class="section">
-            <h2>Listen to a Sample</h2>
-            <audio controls>
-                <source src="sample-music.mp3" type="audio/mpeg">
-                Your browser does not support the audio element.
-            </audio>
-        </div> -->
     </div>
 
     <footer>
-        <p>&copy; 2024 DuoTune Music Generation Demo. All rights reserved.</p>
+        <p>&copy; 2024 Mono2PolySVC Demo. All rights reserved.</p>
     </footer>
 
     <!-- <script>
