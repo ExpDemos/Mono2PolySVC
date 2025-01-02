@@ -110,7 +110,7 @@
 
     <header>
         <div class="container">
-            <h1>Mono2PolySVC: Any-to-any Zero-Shot Singing Voice Conversion from Chinese-Only Training to Multilingual Performance</h1>
+            <h1>Simple and Effective Singing Voice Conversion via Random Selection of SSL-Embedding Channels</h1>
         </div>
     </header>
 
@@ -118,12 +118,11 @@
         <div class="hero">
             <h1 id="abstract">Abstract</h1>
             <p style="text-align: justify;">
-                Recently, some any-to-any zero-shot singing voice conversion (SVC) approaches have employed discrete tokens for content representation. Although this technique effectively separates timbre information and prevents timbre leakage, it faces limitations in reconstructing content for languages not included in the training set. 
-                To address this issue, we present Mono2PolySVC, a novel any-to-any zero-shot SVC system that utilizes Chinese-only training data to enable multilingual singing voice conversion. 
-                By simply incorporating content embedding sampling, our method restricts the information within the content representation while maintaining the semantic representation space. 
-                This approach not only achieves performance comparable to systems using discrete tokens for content representation in any-to-any zero-shot SVC tasks within the training languages but also successfully performs voice conversion for languages outside the training set.
+                Recently, some any-to-any zero-shot singing voice conversion (SVC) approaches have employed discrete tokens for content representation. Although this technique effectively separates timbre information and prevents timbre leakage, it faces limitations in reconstructing content for languages not included in the training set.
+                Meanwhile, embedding-based approaches, compared to token-based ones, are more capable of reconstructing clearer multilingual articulations. However, they require complex supervised training for embedding generation, and the timbral leakage remains significantly higher than that in token-based approaches.
+                To address this issue, we present a novel SSL-based content representation method: by randomly selecting a subset of channels before training as the new embedding and fixing them for subsequent SVC training, we can achieve effective content modeling with improved control over timbral leakage. Specifically, by encoding song content using this method, we can train on a single language while achieving strong multilingual singing voice conversion capabilities. Furthermore, applying this method to ContentVEC enhances the SVC system's performance, achieving timbral similarity comparable to token-based methods, while offering superior content reconstruction detail.
             </p>
-            <img src="image/model_overview.png" alt="Invox Overview" width="900" />
+            <img src="image/model_overview.png" alt="Mono Overview" width="900" />
             <h2 style="text-align: left;"><strong>Table of Contents</strong></h2>
             <ol style="text-align: left;">
                 <li><a href="#abstract" style="font-size: 20px;">Abstract</a></li>
@@ -145,8 +144,8 @@
         <div class="section">
             <h2 id="waiyu">The SVC Performance of Languages other than Chinese</h2>
             <p>
-                <li>The token-based approach exhibits slight variations in pronunciation and intonation in the source WAV file. For example, the final light "t" and "k" in the English samples cannot be pronounced correctly. And Vietnamese songs are also sung in a somewhat unclear manner.</li>
-                <li>In languages not included in the training set, our proposed Mono2PolySVC system demonstrates strong content reconstruction and voice conversion capabilities.</li>
+                <li>The token-based approach exhibits slight variations in pronunciation and intonation in the source WAV file. </li>
+                <li>In languages not included in the training set, our proposed system demonstrates strong content reconstruction and voice conversion capabilities.</li>
             </p>
             <table style="margin-top: 20px;">
                 <tr>
@@ -157,49 +156,56 @@
                     <td style="text-align: center; width: 20%;">Cantonese<audio controls src="demo/mono_demo/waiyu/ca.wav"></audio></td>
                     <td style="text-align: center; width: 20%;">English<audio controls src="demo/mono_demo/waiyu/en.wav"></audio></td>
                     <td style="text-align: center; width: 20%;">Korean<audio controls src="demo/mono_demo/waiyu/ko.wav"></audio></td>
-                    <td style="text-align: center; width: 20%;">Vietnamese<audio controls src="demo/mono_demo/waiyu/vi.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">Vietnamese<audio controls src="demo/mono_demo/waiyu/vt.wav"></audio></td>
                 </tr>
                 <tr>
-                    <td style="text-align: center; width: 20%;">Mono2PolySVC</td>
+                    <td style="text-align: center; width: 20%;">ContentVec-256-Emb<br>(Proposed Best)</td>
                     <td style="text-align: center; width: 20%;">Cantonese<audio controls src="demo/mono_demo/contentvec256/waiyu/female2_ca.wav"></audio></td>
                     <td style="text-align: center; width: 20%;">English<audio controls src="demo/mono_demo/contentvec256/waiyu/female2_en.wav"></audio></td>
                     <td style="text-align: center; width: 20%;">Korean<audio controls src="demo/mono_demo/contentvec256/waiyu/female2_ko.wav"></audio></td>
-                    <td style="text-align: center; width: 20%;">Vietnamese<audio controls src="demo/mono_demo/contentvec256/waiyu/female2_vi.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">Vietnamese<audio controls src="demo/mono_demo/contentvec256/waiyu/female2_vt.wav"></audio></td>
                 </tr>
                 <tr>
                     <td style="text-align: center; width: 20%;">SSL-Token</td>
                     <td style="text-align: center; width: 20%;">Cantonese<audio controls src="demo/mono_demo/so-vits-svc/waiyu/female2_ca.wav"></audio></td>
                     <td style="text-align: center; width: 20%;">English<audio controls src="demo/mono_demo/so-vits-svc/waiyu/female2_en.wav"></audio></td>
                     <td style="text-align: center; width: 20%;">Korean<audio controls src="demo/mono_demo/so-vits-svc/waiyu/female2_ko.wav"></audio></td>
-                    <td style="text-align: center; width: 20%;">Vietnamese<audio controls src="demo/mono_demo/so-vits-svc/waiyu/female2_vi.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">Vietnamese<audio controls src="demo/mono_demo/so-vits-svc/waiyu/female2_vt.wav"></audio></td>
                 </tr>
                 <tr>
                     <td style="text-align: center; width: 20%;">SSL-Emb</td>
                     <td style="text-align: center; width: 20%;">Cantonese<audio controls src="demo/mono_demo/so-vits-svc_emb/waiyu/female2_ca.wav"></audio></td>
                     <td style="text-align: center; width: 20%;">English<audio controls src="demo/mono_demo/so-vits-svc_emb/waiyu/female2_en.wav"></audio></td>
                     <td style="text-align: center; width: 20%;">Korean<audio controls src="demo/mono_demo/so-vits-svc_emb/waiyu/female2_ko.wav"></audio></td>
-                    <td style="text-align: center; width: 20%;">Vietnamese<audio controls src="demo/mono_demo/so-vits-svc_emb/waiyu/female2_vi.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">Vietnamese<audio controls src="demo/mono_demo/so-vits-svc_emb/waiyu/female2_vt.wav"></audio></td>
+                </tr>
+                <tr>
+                    <td style="text-align: center; width: 20%;">HubertSoft-Emb</td>
+                    <td style="text-align: center; width: 20%;">Cantonese<audio controls src="demo/mono_demo/hubertsoft256/waiyu/female2_ca.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">English<audio controls src="demo/mono_demo/hubertsoft256/waiyu/female2_en.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">Korean<audio controls src="demo/mono_demo/hubertsoft256/waiyu/female2_ko.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">Vietnamese<audio controls src="demo/mono_demo/hubertsoft256/waiyu/female2_vt.wav"></audio></td>
                 </tr>
                 <tr>
                     <td style="text-align: center; width: 20%;">ContentVec-Emb</td>
                     <td style="text-align: center; width: 20%;">Cantonese<audio controls src="demo/mono_demo/contentvec/waiyu/female2_ca.wav"></audio></td>
                     <td style="text-align: center; width: 20%;">English<audio controls src="demo/mono_demo/contentvec/waiyu/female2_en.wav"></audio></td>
                     <td style="text-align: center; width: 20%;">Korean<audio controls src="demo/mono_demo/contentvec/waiyu/female2_ko.wav"></audio></td>
-                    <td style="text-align: center; width: 20%;">Vietnamese<audio controls src="demo/mono_demo/contentvec/waiyu/female2_vi.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">Vietnamese<audio controls src="demo/mono_demo/contentvec/waiyu/female2_vt.wav"></audio></td>
                 </tr>
                 <tr>
                     <td style="text-align: center; width: 20%;">SSL-256-Emb</td>
                     <td style="text-align: center; width: 20%;">Cantonese<audio controls src="demo/mono_demo/random1_2/waiyu/female2_ca.wav"></audio></td>
                     <td style="text-align: center; width: 20%;">English<audio controls src="demo/mono_demo/random1_2/waiyu/female2_en.wav"></audio></td>
                     <td style="text-align: center; width: 20%;">Korean<audio controls src="demo/mono_demo/random1_2/waiyu/female2_ko.wav"></audio></td>
-                    <td style="text-align: center; width: 20%;">Vietnamese<audio controls src="demo/mono_demo/random1_2/waiyu/female2_vi.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">Vietnamese<audio controls src="demo/mono_demo/random1_2/waiyu/female2_vt.wav"></audio></td>
                 </tr>
                 <tr>
                     <td style="text-align: center; width: 20%;">SSL-128-Emb</td>
                     <td style="text-align: center; width: 20%;">Cantonese<audio controls src="demo/mono_demo/random3_2/waiyu/female2_ca.wav"></audio></td>
                     <td style="text-align: center; width: 20%;">English<audio controls src="demo/mono_demo/random3_2/waiyu/female2_en.wav"></audio></td>
                     <td style="text-align: center; width: 20%;">Korean<audio controls src="demo/mono_demo/random3_2/waiyu/female2_ko.wav"></audio></td>
-                    <td style="text-align: center; width: 20%;">Vietnamese<audio controls src="demo/mono_demo/random3_2/waiyu/female2_vi.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">Vietnamese<audio controls src="demo/mono_demo/random3_2/waiyu/female2_vt.wav"></audio></td>
                 </tr>
                 <tr>
                     <th colspan="5" style="text-align: center;"><strong>Target Male</strong><audio controls src="demo/tgt/male2.wav"></audio></th>
@@ -209,49 +215,56 @@
                     <td style="text-align: center; width: 20%;">Cantonese<audio controls src="demo/mono_demo/waiyu/ca.wav"></audio></td>
                     <td style="text-align: center; width: 20%;">English<audio controls src="demo/mono_demo/waiyu/en.wav"></audio></td>
                     <td style="text-align: center; width: 20%;">Korean<audio controls src="demo/mono_demo/waiyu/ko.wav"></audio></td>
-                    <td style="text-align: center; width: 20%;">Vietnamese<audio controls src="demo/mono_demo/waiyu/vi.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">Vietnamese<audio controls src="demo/mono_demo/waiyu/vt.wav"></audio></td>
                 </tr>
                 <tr>
-                    <td style="text-align: center; width: 20%;">Mono2PolySVC</td>
+                    <td style="text-align: center; width: 20%;">ContentVec-256-Emb<br>(Proposed Best)</td>
                     <td style="text-align: center; width: 20%;">Cantonese<audio controls src="demo/mono_demo/contentvec256/waiyu/male2_ca.wav"></audio></td>
                     <td style="text-align: center; width: 20%;">English<audio controls src="demo/mono_demo/contentvec256/waiyu/male2_en.wav"></audio></td>
                     <td style="text-align: center; width: 20%;">Korean<audio controls src="demo/mono_demo/contentvec256/waiyu/male2_ko.wav"></audio></td>
-                    <td style="text-align: center; width: 20%;">Vietnamese<audio controls src="demo/mono_demo/contentvec256/waiyu/male2_vi.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">Vietnamese<audio controls src="demo/mono_demo/contentvec256/waiyu/male2_vt.wav"></audio></td>
                 </tr>
                 <tr>
                     <td style="text-align: center; width: 20%;">SSL-Token</td>
                     <td style="text-align: center; width: 20%;">Cantonese<audio controls src="demo/mono_demo/so-vits-svc/waiyu/male2_ca.wav"></audio></td>
                     <td style="text-align: center; width: 20%;">English<audio controls src="demo/mono_demo/so-vits-svc/waiyu/male2_en.wav"></audio></td>
                     <td style="text-align: center; width: 20%;">Korean<audio controls src="demo/mono_demo/so-vits-svc/waiyu/male2_ko.wav"></audio></td>
-                    <td style="text-align: center; width: 20%;">Vietnamese<audio controls src="demo/mono_demo/so-vits-svc/waiyu/male2_vi.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">Vietnamese<audio controls src="demo/mono_demo/so-vits-svc/waiyu/male2_vt.wav"></audio></td>
                 </tr>
                 <tr>
                     <td style="text-align: center; width: 20%;">SSL-Emb</td>
                     <td style="text-align: center; width: 20%;">Cantonese<audio controls src="demo/mono_demo/so-vits-svc_emb/waiyu/male2_ca.wav"></audio></td>
                     <td style="text-align: center; width: 20%;">English<audio controls src="demo/mono_demo/so-vits-svc_emb/waiyu/male2_en.wav"></audio></td>
                     <td style="text-align: center; width: 20%;">Korean<audio controls src="demo/mono_demo/so-vits-svc_emb/waiyu/male2_ko.wav"></audio></td>
-                    <td style="text-align: center; width: 20%;">Vietnamese<audio controls src="demo/mono_demo/so-vits-svc_emb/waiyu/male2_vi.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">Vietnamese<audio controls src="demo/mono_demo/so-vits-svc_emb/waiyu/male2_vt.wav"></audio></td>
+                </tr>
+                <tr>
+                    <td style="text-align: center; width: 20%;">HubertSoft-Emb</td>
+                    <td style="text-align: center; width: 20%;">Cantonese<audio controls src="demo/mono_demo/hubertsoft256/waiyu/male2_ca.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">English<audio controls src="demo/mono_demo/hubertsoft256/waiyu/male2_en.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">Korean<audio controls src="demo/mono_demo/hubertsoft256/waiyu/male2_ko.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">Vietnamese<audio controls src="demo/mono_demo/hubertsoft256/waiyu/male2_vt.wav"></audio></td>
                 </tr>
                 <tr>
                     <td style="text-align: center; width: 20%;">ContentVec-Emb</td>
                     <td style="text-align: center; width: 20%;">Cantonese<audio controls src="demo/mono_demo/contentvec/waiyu/male2_ca.wav"></audio></td>
                     <td style="text-align: center; width: 20%;">English<audio controls src="demo/mono_demo/contentvec/waiyu/male2_en.wav"></audio></td>
                     <td style="text-align: center; width: 20%;">Korean<audio controls src="demo/mono_demo/contentvec/waiyu/male2_ko.wav"></audio></td>
-                    <td style="text-align: center; width: 20%;">Vietnamese<audio controls src="demo/mono_demo/contentvec/waiyu/male2_vi.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">Vietnamese<audio controls src="demo/mono_demo/contentvec/waiyu/male2_vt.wav"></audio></td>
                 </tr>
                 <tr>
                     <td style="text-align: center; width: 20%;">SSL-256-Emb</td>
                     <td style="text-align: center; width: 20%;">Cantonese<audio controls src="demo/mono_demo/random1_2/waiyu/male2_ca.wav"></audio></td>
                     <td style="text-align: center; width: 20%;">English<audio controls src="demo/mono_demo/random1_2/waiyu/male2_en.wav"></audio></td>
                     <td style="text-align: center; width: 20%;">Korean<audio controls src="demo/mono_demo/random1_2/waiyu/male2_ko.wav"></audio></td>
-                    <td style="text-align: center; width: 20%;">Vietnamese<audio controls src="demo/mono_demo/random1_2/waiyu/male2_vi.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">Vietnamese<audio controls src="demo/mono_demo/random1_2/waiyu/male2_vt.wav"></audio></td>
                 </tr>
                 <tr>
                     <td style="text-align: center; width: 20%;">SSL-128-Emb</td>
                     <td style="text-align: center; width: 20%;">Cantonese<audio controls src="demo/mono_demo/random3_2/waiyu/male2_ca.wav"></audio></td>
                     <td style="text-align: center; width: 20%;">English<audio controls src="demo/mono_demo/random3_2/waiyu/male2_en.wav"></audio></td>
                     <td style="text-align: center; width: 20%;">Korean<audio controls src="demo/mono_demo/random3_2/waiyu/male2_ko.wav"></audio></td>
-                    <td style="text-align: center; width: 20%;">Vietnamese<audio controls src="demo/mono_demo/random3_2/waiyu/male2_vi.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">Vietnamese<audio controls src="demo/mono_demo/random3_2/waiyu/male2_vt.wav"></audio></td>
                 </tr>
             </table>
         </div>
@@ -292,6 +305,13 @@
                     <td style="text-align: center; width: 20%;">wav2<audio controls src="demo/mono_demo/so-vits-svc_emb/hanyu/female2_1868748_6704597038050948794_2.wav"></audio></td>
                     <td style="text-align: center; width: 20%;">wav3<audio controls src="demo/mono_demo/so-vits-svc_emb/hanyu/female2_1869914_-00000002147483648.wav"></audio></td>
                     <td style="text-align: center; width: 20%;">wav4<audio controls src="demo/mono_demo/so-vits-svc_emb/hanyu/female2_1870057_0000000002147483647.wav"></audio></td>
+                </tr>
+                <tr>
+                    <td style="text-align: center; width: 20%;">HubertSoft-Emb</td>
+                    <td style="text-align: center; width: 20%;">wav1<audio controls src="demo/mono_demo/hubertsoft256/hanyu/female2_1868033_0000000002147483647.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">wav2<audio controls src="demo/mono_demo/hubertsoft256/hanyu/female2_1868748_6704597038050948794_2.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">wav3<audio controls src="demo/mono_demo/hubertsoft256/hanyu/female2_1869914_-00000002147483648.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">wav4<audio controls src="demo/mono_demo/hubertsoft256/hanyu/female2_1870057_0000000002147483647.wav"></audio></td>
                 </tr>
                 <tr>
                     <td style="text-align: center; width: 20%;">ContentVec-Emb</td>
@@ -344,6 +364,13 @@
                     <td style="text-align: center; width: 20%;">wav2<audio controls src="demo/mono_demo/so-vits-svc_emb/hanyu/male2_1868748_6704597038050948794_2.wav"></audio></td>
                     <td style="text-align: center; width: 20%;">wav3<audio controls src="demo/mono_demo/so-vits-svc_emb/hanyu/male2_1869914_-00000002147483648.wav"></audio></td>
                     <td style="text-align: center; width: 20%;">wav4<audio controls src="demo/mono_demo/so-vits-svc_emb/hanyu/male2_1870057_0000000002147483647.wav"></audio></td>
+                </tr>
+                <tr>
+                    <td style="text-align: center; width: 20%;">HubertSoft-Emb</td>
+                    <td style="text-align: center; width: 20%;">wav1<audio controls src="demo/mono_demo/hubertsoft256/hanyu/male2_1868033_0000000002147483647.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">wav2<audio controls src="demo/mono_demo/hubertsoft256/hanyu/male2_1868748_6704597038050948794_2.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">wav3<audio controls src="demo/mono_demo/hubertsoft256/hanyu/male2_1869914_-00000002147483648.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">wav4<audio controls src="demo/mono_demo/hubertsoft256/hanyu/male2_1870057_0000000002147483647.wav"></audio></td>
                 </tr>
                 <tr>
                     <td style="text-align: center; width: 20%;">ContentVec-Emb</td>
