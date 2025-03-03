@@ -129,7 +129,7 @@
 
     <header>
         <div class="container">
-            <h1>Simple and Effective Singing Voice Conversion via Random Selection of SSL-Embedding Channels</h1>
+            <h1>Simple and Effective Content Encoder for Singing Voice Conversion via SSL-Embedding Dimension Reduction</h1>
         </div>
     </header>
 
@@ -137,11 +137,14 @@
         <div class="hero">
             <h1 id="abstract">Abstract</h1>
             <p style="text-align: justify;">
-                Recently, some any-to-any zero-shot singing voice conversion (SVC) approaches have employed discrete tokens for content representation. Although this technique effectively separates timbre information and prevents timbre leakage, it faces limitations in reconstructing content for languages not included in the training set.
-                Meanwhile, embedding-based approaches, compared to token-based ones, are more capable of reconstructing clearer multilingual articulations. However, they require complex supervised training for embedding generation, and the timbral leakage remains significantly higher than that in token-based approaches.
-                To address this issue, we present a novel SSL-based content representation method: by randomly selecting a subset of channels before training as the new embedding and fixing them for subsequent SVC training, we can achieve effective content modeling with improved control over timbral leakage. Specifically, by encoding song content using this method, we can train on a single language while achieving strong multilingual singing voice conversion capabilities. Furthermore, applying this method to ContentVEC enhances the SVC system's performance, achieving timbral similarity comparable to token-based methods, while offering superior content reconstruction detail.
+                In any-to-any singing voice conversion (SVC), singing content can be encoded using either token-based or embedding-based approaches. 
+                Token-based methods often struggle with accurate content reconstruction, while embedding-based methods face significant timbre leakage. 
+                To address this trade-off, we propose a novel self-supervised learning (SSL)-based content representation method. 
+                By randomly selecting a subset of channels during training to serve as the new embedding and fixing them for subsequent SVC training, 
+                our approach achieves superior content modeling compared to token-based methods while mitigating timbre leakage typically observed in embedding-based approaches. 
+                We validate the effectiveness and generalizability of our method across SSL-based embeddings, SSL-based soft embeddings, and ContentVec.
             </p>
-            <img src="image/model_overview.png" alt="Mono Overview" width="900" />
+            <img src="image/model_overview.png" alt="Mono Overview" style="max-width: 100%; height: auto;" />
             <h2 style="text-align: left;"><strong>Table of Contents</strong></h2>
             <ol style="text-align: left;">
                 <li><a href="#abstract" style="font-size: 20px;">Abstract</a></li>
@@ -213,6 +216,13 @@
                     <td style="text-align: center; width: 20%;">Vietnamese<audio controls src="demo/mono_demo/contentvec/waiyu/female2_vt.wav"></audio></td>
                 </tr>
                 <tr>
+                    <td style="text-align: center; width: 20%;">HubertSoft-128-Emb</td>
+                    <td style="text-align: center; width: 20%;">Cantonese<audio controls src="demo/mono_demo/hubertsoft128/waiyu/female2_ca.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">English<audio controls src="demo/mono_demo/hubertsoft128/waiyu/female2_en.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">Korean<audio controls src="demo/mono_demo/hubertsoft128/waiyu/female2_ko.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">Vietnamese<audio controls src="demo/mono_demo/hubertsoft128/waiyu/female2_vt.wav"></audio></td>
+                </tr>
+                <tr>
                     <td style="text-align: center; width: 20%;">SSL-256-Emb</td>
                     <td style="text-align: center; width: 20%;">Cantonese<audio controls src="demo/mono_demo/random1_2/waiyu/female2_ca.wav"></audio></td>
                     <td style="text-align: center; width: 20%;">English<audio controls src="demo/mono_demo/random1_2/waiyu/female2_en.wav"></audio></td>
@@ -270,6 +280,13 @@
                     <td style="text-align: center; width: 20%;">English<audio controls src="demo/mono_demo/contentvec/waiyu/male2_en.wav"></audio></td>
                     <td style="text-align: center; width: 20%;">Korean<audio controls src="demo/mono_demo/contentvec/waiyu/male2_ko.wav"></audio></td>
                     <td style="text-align: center; width: 20%;">Vietnamese<audio controls src="demo/mono_demo/contentvec/waiyu/male2_vt.wav"></audio></td>
+                </tr>
+                <tr>
+                    <td style="text-align: center; width: 20%;">HubertSoft-128-Emb</td>
+                    <td style="text-align: center; width: 20%;">Cantonese<audio controls src="demo/mono_demo/hubertsoft128/waiyu/male2_ca.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">English<audio controls src="demo/mono_demo/hubertsoft128/waiyu/male2_en.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">Korean<audio controls src="demo/mono_demo/hubertsoft128/waiyu/male2_ko.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">Vietnamese<audio controls src="demo/mono_demo/hubertsoft128/waiyu/male2_vt.wav"></audio></td>
                 </tr>
                 <tr>
                     <td style="text-align: center; width: 20%;">SSL-256-Emb</td>
@@ -340,6 +357,13 @@
                     <td style="text-align: center; width: 20%;">wav4<audio controls src="demo/mono_demo/contentvec/hanyu/female2_1870057_0000000002147483647.wav"></audio></td>
                 </tr>
                 <tr>
+                    <td style="text-align: center; width: 20%;">HubertSoft-128-Emb</td>
+                    <td style="text-align: center; width: 20%;">wav1<audio controls src="demo/mono_demo/hubertsoft128/hanyu/female2_1868033_0000000002147483647.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">wav2<audio controls src="demo/mono_demo/hubertsoft128/hanyu/female2_1868748_6704597038050948794_2.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">wav3<audio controls src="demo/mono_demo/hubertsoft128/hanyu/female2_1869914_-00000002147483648.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">wav4<audio controls src="demo/mono_demo/hubertsoft128/hanyu/female2_1870057_0000000002147483647.wav"></audio></td>
+                </tr>
+                <tr>
                     <td style="text-align: center; width: 20%;">SSL-256-Emb</td>
                     <td style="text-align: center; width: 20%;">wav1<audio controls src="demo/mono_demo/random1_2/hanyu/female2_1868033_0000000002147483647.wav"></audio></td>
                     <td style="text-align: center; width: 20%;">wav2<audio controls src="demo/mono_demo/random1_2/hanyu/female2_1868748_6704597038050948794_2.wav"></audio></td>
@@ -397,6 +421,13 @@
                     <td style="text-align: center; width: 20%;">wav2<audio controls src="demo/mono_demo/contentvec/hanyu/male2_1868748_6704597038050948794_2.wav"></audio></td>
                     <td style="text-align: center; width: 20%;">wav3<audio controls src="demo/mono_demo/contentvec/hanyu/male2_1869914_-00000002147483648.wav"></audio></td>
                     <td style="text-align: center; width: 20%;">wav4<audio controls src="demo/mono_demo/contentvec/hanyu/male2_1870057_0000000002147483647.wav"></audio></td>
+                </tr>
+                <tr>
+                    <td style="text-align: center; width: 20%;">HubertSoft-128-Emb</td>
+                    <td style="text-align: center; width: 20%;">wav1<audio controls src="demo/mono_demo/hubertsoft128/hanyu/male2_1868033_0000000002147483647.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">wav2<audio controls src="demo/mono_demo/hubertsoft128/hanyu/male2_1868748_6704597038050948794_2.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">wav3<audio controls src="demo/mono_demo/hubertsoft128/hanyu/male2_1869914_-00000002147483648.wav"></audio></td>
+                    <td style="text-align: center; width: 20%;">wav4<audio controls src="demo/mono_demo/hubertsoft128/hanyu/male2_1870057_0000000002147483647.wav"></audio></td>
                 </tr>
                 <tr>
                     <td style="text-align: center; width: 20%;">SSL-256-Emb</td>
